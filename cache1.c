@@ -49,9 +49,9 @@ struct datos
 
 struct datos *datos;
 
-void LeerDatos() {
+int numeroDeDatosLeidos=0;
 
-    int numeroDeDatosLeidos=0;
+void LeerDatos() {
 
     FILE *archivo;
     char d1[256], d2[256], d3[256], d4[256];
@@ -81,12 +81,10 @@ void LeerDatos() {
 
 }
 
+/*
 void leernumerodelineas() {
-
     int numlineas = 0;
-    
-
-}
+}*/
 
 int main()
 {
