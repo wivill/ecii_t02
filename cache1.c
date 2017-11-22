@@ -16,6 +16,15 @@
 //control de procesos y otras
 #include <stdlib.h>
 
+//Se incluyó debido a que se usa
+//la funcion strcpy
+#include <string.h>
+
+//Header de la biblioteca estandar de C
+//para definir un dato de tipo booleano
+#include <stdbool.h>
+
+
 
 //Estructuras definidas para contener los datos la cache y la memoria
 
@@ -25,18 +34,59 @@ struct datos
 
     char dato[1];
     char dir[1];
-    int mo;
-    int ex;
-    int sh;
-    int iv;
-    int ow;
+    int modified;
+    int exclusive;
+    int share;
+    int invalid;
+    int owen;
     int dirty;
-    int L;
-    int S;
-    
+    int clear;
+    bool L;
+    bool S;
+    unsigned int tag;
+    int core;
 };
 
 struct datos *datos;
+
+void LeerDatos() {
+
+    int numeroDeDatosLeidos=0;
+
+    FILE *archivo;
+    char d1[256], d2[256], d3[256], d4[256];
+    
+    printf("Leyendo datos de memoria\n");
+
+    //Abriendo archivo de texto en modo de lectura
+    char nombreDeArchivo[256]="memory-trace-gcc.txt";
+    archivo = fopen(nombreDeArchivo, "r");
+    if (!archivo) {
+        printf("No se pudo abrir el archivo: memory-trace-gcc.txt";
+        exit(1);
+}
+
+    //Leyendo datos de memoria linea por linea
+    fscanf(archivo, "%s \n", d1);
+    fscanf(archivo, "%s \n", d2);
+    fscanf(archivo, "%s \n", d3);
+    fscanf(archivo, "%s \n", d4);
+    int numeroDeDatosLeidos++;
+
+
+    printf("  Numero de datos leidos: %d\n", numeroDeDatosLeidos);
+
+    //Cerrando archivo
+    fclose(archivo);
+
+}
+
+void leernumerodelineas() {
+
+    int numlineas = 0;
+    
+
+}
 
 int main()
 {
@@ -44,8 +94,6 @@ int main()
     //Reservando memoria para los datos de la estructura
     datos = (struct datos *)malloc(sizeof(struct datos));
 
-    //Definiendo 
-    struct cache_datos dato0,dato1,dato2,dato3;
 
     //Leer datos del archivo con direcciones y datos
 
@@ -53,7 +101,9 @@ int main()
     //Funciones para la comunicacion
     
 
-   //Liberando memoria
+    //Liberando memoria
    free(datos);
 
 }
+
+
