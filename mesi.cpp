@@ -357,6 +357,9 @@ void Controller(int coreId, vector<cache> & Core1, vector<cache> & Core2,
 
 }
 
+/* Función para imprimir en
+*/
+
 void instructionPrint(int coreId, vector<cache> & Core1, vector<cache> & Core2,
     vector<cache> & Core3, vector<cache> & Core4, vector<cache> & Share,
     unsigned int addressRaw, int operation, int line, std::fstream & memory,
@@ -444,53 +447,7 @@ int main(int argc, char *argv[]) {
         indexTest = convertIndex(addressRaw, L1);
         instructionPrint(4, Core1, Core2, Core3, Core4, Share, addressRaw,
             operation, Counter4[i], memory, indexTest);
-        // addressRaw = getAddress(memory, Counter1[i]);
-        // cout << "Dirección Raw: " << addressRaw << endl;
-        // operation = getOperation(memory);
-        // Controller(1, Core1, Core2, Core3, Core4, Share, addressRaw, operation);
-        // indexTest = convertIndex(addressRaw, L1);
-        // cout << "Índice: " << indexTest << "   " << "Operación: " << operation << endl;
-        // cout << Core1[indexTest].tag << "\t" << Core1[indexTest].state << endl;
-        // cout << Core2[indexTest].tag << "\t" << Core2[indexTest].state << endl;
-        // cout << Core3[indexTest].tag << "\t" << Core3[indexTest].state << endl;
-        // cout << Core4[indexTest].tag << "\t" << Core4[indexTest].state << endl;
-        // cout << "\n" << endl;
-        //
-        // addressRaw = getAddress(memory, Counter2[i]);
-        // cout << addressRaw << endl;
-        // operation = getOperation(memory);
-        // Controller(2, Core1, Core2, Core3, Core4, Share, addressRaw, operation);
-        // indexTest = convertIndex(addressRaw, L1);
-        // cout << indexTest << "   " << operation << endl;
-        // cout << Core1[indexTest].tag << "\t" << Core1[indexTest].state << endl;
-        // cout << Core2[indexTest].tag << "\t" << Core2[indexTest].state << endl;
-        // cout << Core3[indexTest].tag << "\t" << Core3[indexTest].state << endl;
-        // cout << Core4[indexTest].tag << "\t" << Core4[indexTest].state << endl;
-        // cout << "\n" << endl;
-        //
-        // addressRaw = getAddress(memory, Counter3[i]);
-        // cout << addressRaw << endl;
-        // operation = getOperation(memory);
-        // Controller(3, Core1, Core2, Core3, Core4, Share, addressRaw, operation);
-        // indexTest = convertIndex(addressRaw, L1);
-        // cout << indexTest << "   " << operation << endl;
-        // cout << Core1[indexTest].tag << "\t" << Core1[indexTest].state << endl;
-        // cout << Core2[indexTest].tag << "\t" << Core2[indexTest].state << endl;
-        // cout << Core3[indexTest].tag << "\t" << Core3[indexTest].state << endl;
-        // cout << Core4[indexTest].tag << "\t" << Core4[indexTest].state << endl;
-        // cout << "\n" << endl;
-        //
-        // addressRaw = getAddress(memory, Counter4[i]);
-        // cout << addressRaw << endl;
-        // operation = getOperation(memory);
-        // Controller(4, Core1, Core2, Core3, Core4, Share, addressRaw, operation);
-        // indexTest = convertIndex(addressRaw, L1);
-        // cout << indexTest << "   " << operation << endl;
-        // cout << Core1[indexTest].tag << "\t" << Core1[indexTest].state << endl;
-        // cout << Core2[indexTest].tag << "\t" << Core2[indexTest].state << endl;
-        // cout << Core3[indexTest].tag << "\t" << Core3[indexTest].state << endl;
-        // cout << Core4[indexTest].tag << "\t" << Core4[indexTest].state << endl;
-        // cout << "\n" << endl;
+
     }
 
     return 0;
