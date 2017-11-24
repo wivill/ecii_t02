@@ -424,23 +424,23 @@ int main(int argc, char *argv[]) {
 
         int indexTest;
 
-        addressRaw = getAddress(memory, Counter1[i]);
-        operation = getOperation(memory);
-        indexTest = convertIndex(addressRaw, L1);
-        instructionPrint(1, Core1, Core2, Core3, Core4, Share, addressRaw,
-            operation, Counter1[i], memory, indexTest);
-
-        addressRaw = getAddress(memory, Counter2[i]);
-        operation = getOperation(memory);
-        indexTest = convertIndex(addressRaw, L1);
-        instructionPrint(2, Core1, Core2, Core3, Core4, Share, addressRaw,
-            operation, Counter2[i], memory, indexTest);
-
-        addressRaw = getAddress(memory, Counter3[i]);
-        operation = getOperation(memory);
-        indexTest = convertIndex(addressRaw, L1);
-        instructionPrint(3, Core1, Core2, Core3, Core4, Share, addressRaw,
-            operation, Counter3[i], memory, indexTest);
+        // addressRaw = getAddress(memory, Counter1[i]);
+        // operation = getOperation(memory);
+        // indexTest = convertIndex(addressRaw, L1);
+        // instructionPrint(1, Core1, Core2, Core3, Core4, Share, addressRaw,
+        //     operation, Counter1[i], memory, indexTest);
+        //
+        // addressRaw = getAddress(memory, Counter2[i]);
+        // operation = getOperation(memory);
+        // indexTest = convertIndex(addressRaw, L1);
+        // instructionPrint(2, Core1, Core2, Core3, Core4, Share, addressRaw,
+        //     operation, Counter2[i], memory, indexTest);
+        //
+        // addressRaw = getAddress(memory, Counter3[i]);
+        // operation = getOperation(memory);
+        // indexTest = convertIndex(addressRaw, L1);
+        // instructionPrint(3, Core1, Core2, Core3, Core4, Share, addressRaw,
+        //     operation, Counter3[i], memory, indexTest);
 
         addressRaw = getAddress(memory, Counter4[i]);
         operation = getOperation(memory);
