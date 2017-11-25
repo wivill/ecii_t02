@@ -1,3 +1,6 @@
+/*Se realizan los ncludes necesarios para la correcta manipulación de los
+  archivos, entre otras funcionaes básicas.*/
+
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
@@ -5,34 +8,20 @@
 #include <limits>
 #include <vector>
 #include <sstream>
-///////////////////////////////////////////////////////////////////////////////
-//// Definicion de Estados  0 Modificado , 1  Share  , 2 Exlusive ,3 Invalido
-//// Cada Cache tiene un struct por cada bloque, cada bloque tiene tag ,estado
-//// y a cual core pertenece
-//// Para evitar trabajar tanto con strings un Load sera 0 y un Store sera un 1
-////
-////
-////
-////
-////
-///////////////////////////////////////////////////////////////////////////////
 
 using namespace std;
 
-/*
-    Algunas definiciones para facilitar un poco el trabajo con los estados
-    y niveles de caché.
-*/
+/*Algunas definiciones para facilitar un poco el trabajo con los estados
+  y niveles de caché.*/
 
 #define L1 1
 #define L2 2
-#define MOD 0
-#define EX 1
-#define SH 2
-#define INV 3
+#define MOD 0   // M
+#define EX 1    // E
+#define SH 2    // S
+#define INV 3   // I
 
-
-// Estructura de datos del caché sobre el cual se trabajará
+/*Definición de caché como estructura de datos*/
 struct cache {
 
     int state;
@@ -41,9 +30,7 @@ struct cache {
 
 };
 
-//Funcion para obtener una linea especifica
-
-
+/*Obtención de línea específica para indicar cual se debe procesar.*/
 std::fstream& GotoLine(std::fstream& file,  int num) {
 
     file.seekg(std::ios::beg);
@@ -56,7 +43,8 @@ std::fstream& GotoLine(std::fstream& file,  int num) {
 
 }
 
-//instruccion para determinar el numero maximo de lineas
+/*Conteo de líneas para usar como paŕametro y distribuir las instrucciones
+  entre los cores.*/
 int countLines(char* testFile) {
 
     string lineC;
@@ -73,22 +61,18 @@ int countLines(char* testFile) {
 
 }
 
-// Funcion para inicializacion de caches
-
-
-void Init(vector<cache>& Cache, int size, int id){
+/*Inicializa los bloques de caché con tamaño e identificador*/
+void init_cache(vector<cache>& Cache, int size, int id) {
 
     for (int i = 0; i < size; i++) {
         Cache.push_back(cache());
-        Cache[i].state = 3;
+        Cache[i].state = INV;
         Cache[i].CoreId = id;
     }
 
 }
 
-//////////////////////////////////// Conversion de direcciones
-
-
+/*La idea de la conversión de */
 unsigned int convertIndex(unsigned int Value, int level){
 
     unsigned int temp, Index;
@@ -194,22 +178,22 @@ void readBusRd(unsigned int index, unsigned int tag, unsigned int address,
                int stateA, vector<cache>& Core, vector<cache>& CoreA,
                vector<cache>& Share) {
 
-    if(CoreA[index].tag==tag) {
+    if(CoreA[index].tag == tag) {
         switch(stateA) {
-            case 0:
+            case MOD:
                 write(address, Share, L2);
                 setState(address, CoreA, SH);
                 write(address, Core, L1);
                 setState(address, Core, SH);
                 break;
 
-            case 1:
+            case EX:
+                setState(address, CoreA, SH);
                 write(address, Core, L1);
                 setState(address, Core, SH);
                 break;
 
-            case 2:
-                setState(address, CoreA, SH);
+            case SH:
                 write(address, Core, L1);
                 setState(address, Core, SH);
                 break;
@@ -234,9 +218,8 @@ void invalidCaches(int index, unsigned int tag, unsigned int address,
 }
 
 void stateCoreModifier(vector<cache>& Core, vector<cache>& CoreA,
-                       vector<cache>& CoreB, vector<cache>& CoreC,
-                       unsigned int address,int operation,
-                       vector<cache>& Share) {
+    vector<cache>& CoreB, vector<cache>& CoreC, unsigned int address,
+    int operation, vector<cache>& Share) {
 
     int state, stateA, stateB, stateC;
     unsigned int tag;
@@ -252,30 +235,32 @@ void stateCoreModifier(vector<cache>& Core, vector<cache>& CoreA,
     if (operation == 0) {
 
         if(Core[index].tag != tag) {
-            state = 3;
+            state = INV;
         }
 
         switch (state) {
-            case 0:
+        case MOD:
                 break;
 
-            case 1:
+            case EX:
                 break;
 
-            case 2:
+            case SH:
                 break;
 
-            case 3:
-                if((stateA == 3) && (stateB == 3) && (stateC == 3)) {
+            case INV:
+                if((stateA == INV) && (stateB == INV) && (stateC == INV)) {
                     setState(address, Core, EX);
                     write(address, Core, L1);
                     write(address, Share, L2);
                 }
                 else if((CoreA[index].tag != tag) && (CoreB[index].tag != tag)
-                        && (CoreC[index].tag != tag)) {
+                    && (CoreC[index].tag != tag)) {
+
                     setState(address, Core, EX);
                     write(address, Core, L1);
                     write(address, Share, L2);}
+
                 else {
                     readBusRd(index, tag,address, stateA, Core, CoreA, Share);
                     readBusRd(index, tag,address, stateB, Core, CoreB, Share);
@@ -292,26 +277,26 @@ void stateCoreModifier(vector<cache>& Core, vector<cache>& CoreA,
     else {
 
         switch(state) {
-            case 0:
+            case MOD:
                 write(address, Core, L1);
                 break;
 
-            case 1:
-                setState(address, Core, 0);
-                write(address, Core, 1);
+            case EX:
+                setState(address, Core, MOD);
+                write(address, Core, L1);
+                break;
+
+            case SH:
+                setState(address, Core, MOD);
+                write(address, Core, L1);
                 invalidCaches(index, tag, address, stateA, CoreA, Share);
                 invalidCaches(index, tag, address, stateB, CoreB, Share);
                 invalidCaches(index, tag, address, stateC, CoreC, Share);
                 break;
 
-            case 2:
-                setState(address, Core, 0);
-                write(address, Core, 1);
-                break;
-
-            case 3:
-                setState(address, Core, 0);
-                write(address, Core, 1);
+            case INV:
+                setState(address, Core, MOD);
+                write(address, Core, L1);
                 invalidCaches(index, tag, address, stateA, CoreA, Share);
                 invalidCaches(index, tag, address, stateB, CoreB, Share);
                 invalidCaches(index, tag, address, stateC, CoreC, Share);
@@ -392,11 +377,11 @@ void instructionPrint(int coreId, vector<cache> & Core1, vector<cache> & Core2,
 int main(int argc, char *argv[]) {
 
     vector<cache> Core1, Core2, Core3, Core4, Share;
-    Init(Core1, 1000, 1);
-    Init(Core2, 1000, 2);
-    Init(Core3, 1000, 3);
-    Init(Core4, 1000, 4);
-    Init(Share, 8000, 0);
+    init_cache(Core1, 1000, 1);
+    init_cache(Core2, 1000, 2);
+    init_cache(Core3, 1000, 3);
+    init_cache(Core4, 1000, 4);
+    init_cache(Share, 8000, 0);
 
     string line;
     int maxCount = 0;
@@ -424,23 +409,23 @@ int main(int argc, char *argv[]) {
 
         int indexTest;
 
-        // addressRaw = getAddress(memory, Counter1[i]);
-        // operation = getOperation(memory);
-        // indexTest = convertIndex(addressRaw, L1);
-        // instructionPrint(1, Core1, Core2, Core3, Core4, Share, addressRaw,
-        //     operation, Counter1[i], memory, indexTest);
-        //
-        // addressRaw = getAddress(memory, Counter2[i]);
-        // operation = getOperation(memory);
-        // indexTest = convertIndex(addressRaw, L1);
-        // instructionPrint(2, Core1, Core2, Core3, Core4, Share, addressRaw,
-        //     operation, Counter2[i], memory, indexTest);
-        //
-        // addressRaw = getAddress(memory, Counter3[i]);
-        // operation = getOperation(memory);
-        // indexTest = convertIndex(addressRaw, L1);
-        // instructionPrint(3, Core1, Core2, Core3, Core4, Share, addressRaw,
-        //     operation, Counter3[i], memory, indexTest);
+        addressRaw = getAddress(memory, Counter1[i]);
+        operation = getOperation(memory);
+        indexTest = convertIndex(addressRaw, L1);
+        instructionPrint(1, Core1, Core2, Core3, Core4, Share, addressRaw,
+            operation, Counter1[i], memory, indexTest);
+
+        addressRaw = getAddress(memory, Counter2[i]);
+        operation = getOperation(memory);
+        indexTest = convertIndex(addressRaw, L1);
+        instructionPrint(2, Core1, Core2, Core3, Core4, Share, addressRaw,
+            operation, Counter2[i], memory, indexTest);
+
+        addressRaw = getAddress(memory, Counter3[i]);
+        operation = getOperation(memory);
+        indexTest = convertIndex(addressRaw, L1);
+        instructionPrint(3, Core1, Core2, Core3, Core4, Share, addressRaw,
+            operation, Counter3[i], memory, indexTest);
 
         addressRaw = getAddress(memory, Counter4[i]);
         operation = getOperation(memory);
