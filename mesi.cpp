@@ -350,7 +350,7 @@ void instructionPrint(int coreId, vector<cache> & Core1, vector<cache> & Core2,
     unsigned int addressRaw, int operation, int line, std::fstream & memory,
     int indexTest) {
 
-    cout << "Dirección Raw: " << addressRaw << endl;
+    cout << "Dirección: " << addressRaw << endl;
     Controller(coreId, Core1, Core2, Core3, Core4, Share, addressRaw,
         operation);
     cout << "Índice: " << indexTest << "   " << "Operación: " << operation <<
@@ -367,6 +367,9 @@ void instructionPrint(int coreId, vector<cache> & Core1, vector<cache> & Core2,
 
     cout << "Tag Core 4: " << Core4[indexTest].tag << "\t" << "Estado Core 4: "
         << Core4[indexTest].state << endl;
+
+    cout << "Tag L2: " << Share[indexTest].tag << "\t" << "Estado L2: "
+        << Share[indexTest].state << endl;
 
     cout << "\n" << endl;
 
