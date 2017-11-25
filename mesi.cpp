@@ -31,7 +31,7 @@ struct cache {
 };
 
 /*Obtención de línea específica para indicar cual se debe procesar.*/
-std::fstream& GotoLine(std::fstream& file,  int num) {
+std::fstream& GotoLine(std::fstream& file, int num) {
 
     file.seekg(std::ios::beg);
 

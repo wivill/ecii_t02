@@ -1,0 +1,8 @@
+#PBS -N MESI_ECII
+#PBS -q phi-n1h72
+#PBS -l nodes=1
+#PBS -l walltime=01:00:00
+
+cd $PBS_O_WORKDIR
+
+./mesi.o memory.trace_subset
