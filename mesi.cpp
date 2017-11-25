@@ -72,7 +72,7 @@ void init_cache(vector<cache>& Cache, int size, int id) {
 
 }
 
-/*La idea de la conversión de */
+/*Convierte index y tag de acuerdo con el nivel de cache y la instrucción */
 unsigned int convertIndex(unsigned int Value, int level){
 
     unsigned int temp, Index;
@@ -105,7 +105,7 @@ unsigned int convertTag(unsigned int Value, int level) {
 
 }
 
-//////////////////////////////////////////////Escritura y lectura de tags y estados
+/*Obtención y actualización de estado, así como lectura en cache*/
 int getState(unsigned int address, vector<cache> & Core) {
 
     int stateReturn;
@@ -141,8 +141,7 @@ void write_cache(unsigned int address, vector<cache> & Core, int level) {
 
 }
 
-//Funciones para obtener la direccion en decimal y conversion de operacion a numero
-
+/*Funciones para obtener direcciones, operaciones y establecer estados*/
 unsigned int getAddress(std::fstream & address, int lineNumber) {
 
     string instruction;
@@ -172,7 +171,6 @@ int getOperation(std::fstream & operation) {
     }
 
 }
-//////////////////////////////////////////////////// Hasta aqui herramientas
 
 void readBusRd(unsigned int index, unsigned int tag, unsigned int address,
                int stateA, vector<cache>& Core, vector<cache>& CoreA,
