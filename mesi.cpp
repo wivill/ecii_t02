@@ -116,15 +116,15 @@ int getState(unsigned int address, vector<cache> & Core) {
 
 }
 
-void setState(unsigned int address,vector<cache> & Core,int stateNew){
+void setState(unsigned int address, vector<cache> & Core, int stateNew){
 
-    unsigned  int index;
+    unsigned int index;
     index = convertIndex(address, L1);
     Core[index].state = stateNew;
 
 }
 
-void write(unsigned int address, vector<cache> & Core, int level) {
+void write_cache(unsigned int address, vector<cache> & Core, int level) {
 
     unsigned int index, Tag;
 
@@ -134,9 +134,9 @@ void write(unsigned int address, vector<cache> & Core, int level) {
         Core[index].tag = Tag;
     }
     else {
-        index=convertIndex(address, L2);
-        Tag=convertTag(address, L2);
-        Core[index].tag=Tag;
+        index = convertIndex(address, L2);
+        Tag = convertTag(address, L2);
+        Core[index].tag = Tag;
     }
 
 }
@@ -181,20 +181,20 @@ void readBusRd(unsigned int index, unsigned int tag, unsigned int address,
     if(CoreA[index].tag == tag) {
         switch(stateA) {
             case MOD:
-                write(address, Share, L2);
+                write_cache(address, Share, L2);
                 setState(address, CoreA, SH);
-                write(address, Core, L1);
+                write_cache(address, Core, L1);
                 setState(address, Core, SH);
                 break;
 
             case EX:
                 setState(address, CoreA, SH);
-                write(address, Core, L1);
+                write_cache(address, Core, L1);
                 setState(address, Core, SH);
                 break;
 
             case SH:
-                write(address, Core, L1);
+                write_cache(address, Core, L1);
                 setState(address, Core, SH);
                 break;
 
@@ -212,33 +212,34 @@ void invalidCaches(int index, unsigned int tag, unsigned int address,
     }
 
     if(stateA == 0) {
-        write(address, Share, L2);
+        write_cache(address, Share, L2);
     }
 
 }
 
-void stateCoreModifier(vector<cache>& Core, vector<cache>& CoreA,
-    vector<cache>& CoreB, vector<cache>& CoreC, unsigned int address,
+/*Se realiza la lógica de actualización de estados de caché.*/
+void stateCoreModifier(vector<cache>& CoreA, vector<cache>& CoreB,
+    vector<cache>& CoreC, vector<cache>& CoreD, unsigned int address,
     int operation, vector<cache>& Share) {
 
-    int state, stateA, stateB, stateC;
+    int stateA, stateB, stateC, stateD;
     unsigned int tag;
     unsigned int index;
     tag = convertTag(address, L1);
     index = convertIndex(address, L1);
 
-    state = getState(address, Core);
     stateA = getState(address, CoreA);
     stateB = getState(address, CoreB);
     stateC = getState(address, CoreC);
+    stateD = getState(address, CoreD);
 
     if (operation == 0) {
 
-        if(Core[index].tag != tag) {
-            state = INV;
+        if(CoreA[index].tag != tag) {
+            stateA = INV;
         }
 
-        switch (state) {
+        switch (stateA) {
         case MOD:
                 break;
 
@@ -249,22 +250,22 @@ void stateCoreModifier(vector<cache>& Core, vector<cache>& CoreA,
                 break;
 
             case INV:
-                if((stateA == INV) && (stateB == INV) && (stateC == INV)) {
-                    setState(address, Core, EX);
-                    write(address, Core, L1);
-                    write(address, Share, L2);
+                if((stateB == INV) && (stateC == INV) && (stateD == INV)) {
+                    setState(address, CoreA, EX);
+                    write_cache(address, CoreA, L1);
+                    write_cache(address, Share, L2);
                 }
-                else if((CoreA[index].tag != tag) && (CoreB[index].tag != tag)
-                    && (CoreC[index].tag != tag)) {
+                else if((CoreB[index].tag != tag) && (CoreC[index].tag != tag)
+                    && (CoreD[index].tag != tag)) {
 
-                    setState(address, Core, EX);
-                    write(address, Core, L1);
-                    write(address, Share, L2);}
+                    setState(address, CoreA, EX);
+                    write_cache(address, CoreA, L1);
+                    write_cache(address, Share, L2);}
 
                 else {
-                    readBusRd(index, tag,address, stateA, Core, CoreA, Share);
-                    readBusRd(index, tag,address, stateB, Core, CoreB, Share);
-                    readBusRd(index, tag,address, stateC, Core, CoreC, Share);
+                    readBusRd(index, tag, address, stateB, CoreA, CoreB, Share);
+                    readBusRd(index, tag, address, stateC, CoreA, CoreC, Share);
+                    readBusRd(index, tag, address, stateD, CoreA, CoreD, Share);
                 }
                 break;
 
@@ -276,30 +277,30 @@ void stateCoreModifier(vector<cache>& Core, vector<cache>& CoreA,
 
     else {
 
-        switch(state) {
+        switch(stateA) {
             case MOD:
-                write(address, Core, L1);
+                write_cache(address, CoreA, L1);
                 break;
 
             case EX:
-                setState(address, Core, MOD);
-                write(address, Core, L1);
+                setState(address, CoreA, MOD);
+                write_cache(address, CoreA, L1);
                 break;
 
             case SH:
-                setState(address, Core, MOD);
-                write(address, Core, L1);
-                invalidCaches(index, tag, address, stateA, CoreA, Share);
+                setState(address, CoreA, MOD);
+                write_cache(address, CoreA, L1);
                 invalidCaches(index, tag, address, stateB, CoreB, Share);
                 invalidCaches(index, tag, address, stateC, CoreC, Share);
+                invalidCaches(index, tag, address, stateD, CoreD, Share);
                 break;
 
             case INV:
-                setState(address, Core, MOD);
-                write(address, Core, L1);
-                invalidCaches(index, tag, address, stateA, CoreA, Share);
+                setState(address, CoreA, MOD);
+                write_cache(address, CoreA, L1);
                 invalidCaches(index, tag, address, stateB, CoreB, Share);
                 invalidCaches(index, tag, address, stateC, CoreC, Share);
+                invalidCaches(index, tag, address, stateD, CoreD, Share);
                 break;
 
             default:
@@ -310,7 +311,8 @@ void stateCoreModifier(vector<cache>& Core, vector<cache>& CoreA,
 
 }
 
-
+/*Actualiza los estados según los valores proporcionados por el core y
+  la instrucción ejecutada*/
 void Controller(int coreId, vector<cache> & Core1, vector<cache> & Core2,
                 vector<cache> & Core3, vector<cache> & Core4,
                 vector<cache> & Share, unsigned int address, int operation) {
@@ -342,8 +344,7 @@ void Controller(int coreId, vector<cache> & Core1, vector<cache> & Core2,
 
 }
 
-/* Función para imprimir en
-*/
+/* Función para imprimir en pantalla o archivo los estados de caché.*/
 
 void instructionPrint(int coreId, vector<cache> & Core1, vector<cache> & Core2,
     vector<cache> & Core3, vector<cache> & Core4, vector<cache> & Share,
@@ -375,8 +376,7 @@ void instructionPrint(int coreId, vector<cache> & Core1, vector<cache> & Core2,
 
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*Main*/
 int main(int argc, char *argv[]) {
 
     vector<cache> Core1, Core2, Core3, Core4, Share;
